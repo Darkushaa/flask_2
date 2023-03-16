@@ -1,6 +1,7 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, flash
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'fdgdfgdfggf786hfg6hfg6h7f'
 
 menu = [{"name": "Установка", "url": "install-flask"},
         {"name": "Первое приложение", "url": "first-app"},
@@ -22,7 +23,10 @@ def about():
 @app.route("/contact", methods=["POST", "GET"])
 def contact():
     if request.method == 'POST':
-        print(request.form)
+        if len(request.form['username']) > 2:
+            flash('Сообщение отправлено', category='success')
+        else:
+            flash('Ошибка отправки', category='error')
 
     return render_template('contact.html', title="О сайте", menu=menu)
 
@@ -31,9 +35,6 @@ def contact():
 def profile(username):
     return f"Пользователь: {username}"
 
-
-# with app.test_request_context():
-#     print(url_for('about'))
 
 if __name__ == "__main__":
     app.run(debug=True)
