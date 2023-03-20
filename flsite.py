@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, flash
+from flask import Flask, render_template, url_for, request, flash, session, redirect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fdgdfgdfggf786hfg6hfg6h7f'
@@ -33,7 +33,23 @@ def contact():
 
 @app.route("/profile/<username>")
 def profile(username):
-    return f"Пользователь: {username}"
+    return f"Профиль пользователя: {username}"
+
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    if 'userLoggen' in session:
+        return redirect(url_for('profile', username=session['userLoggen']))
+    elif request.method == 'POST' and request.form['username'] == "selfedu" and request.form['psw'] == "123":
+        session['userLoggen'] = request.form['username']
+        return redirect(url_for('profile', username=session['userLoggen']))
+
+    return render_template('login.html', title="Авторозация", menu=menu)
+
+
+@app.errorhandler(404)
+def pagenotfound(error):
+    return render_template('page404.html', title="Страница не найдена", menu=menu)
 
 
 if __name__ == "__main__":
